@@ -10,7 +10,7 @@
 </ol>
 @stop
 
-@section('styles')
+@push('css-stack')
 <link href="{!! Module::asset('media:css/dropzone.css') !!}" rel="stylesheet" type="text/css" />
 <style>
 .dropzone {
@@ -19,12 +19,12 @@
     margin-bottom: 20px;
 }
 </style>
-@stop
+@endpush
 
 @section('content')
 <div class="row">
     <div class="col-md-12">
-        <form method="POST" class="dropzone">
+        <form method="POST" id="dropzone">
             {!! Form::token() !!}
         </form>
     </div>
@@ -49,25 +49,25 @@
                                 <tr>
                                     <td>
                                         <?php if ($file->isImage()): ?>
-                                            <img src="{{ Imagy::getThumbnail($file->path, 'smallThumb') }}" alt=""/>
+                                            <img src="{{ Imagy::getThumbnail($file->PATH, 'smallThumb') }}" alt=""/>
                                         <?php else: ?>
-                                            <i class="fa fa-file" style="font-size: 20px;"></i>
+                                            <i class="fa {{ FileHelper::getFaIcon($file->MEDIA_TYPE) }}" style="font-size: 20px;"></i>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.media.media.edit', [$file->id]) }}">
-                                            {{ $file->filename }}
+                                        <a href="{{ route('admin.media.media.edit', [$file->ID]) }}">
+                                            {{ $file->FILENAME }}
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.media.media.edit', [$file->id]) }}">
-                                            {{ $file->created_at }}
+                                        <a href="{{ route('admin.media.media.edit', [$file->ID]) }}">
+                                            {{ $file->IDATE }}
                                         </a>
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="{{ route('admin.media.media.edit', [$file->id]) }}" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
-                                            <button class="btn btn-danger btn-flat" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{{ route('admin.media.media.destroy', [$file->id]) }}"><i class="fa fa-trash"></i></button>
+                                            <a href="{{ route('admin.media.media.edit', [$file->ID]) }}" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
+                                            <button class="btn btn-danger btn-flat" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{{ route('admin.media.media.destroy', [$file->ID]) }}"><i class="fa fa-trash"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -84,6 +84,14 @@
                     </tfoot>
                 </table>
             <!-- /.box-body -->
+
+            <?php $config = config('asgard.media.config'); ?>
+
+            <script>
+                var maxFilesize = '<?php echo $config['max-file-size'] ?>',
+                        acceptedFiles = '<?php echo $config['allowed-types'] ?>';
+            </script>
+            <script src="{!! Module::asset('media:js/init-dropzone.js') !!}"></script>
             </div>
         </div>
     </div>
@@ -91,14 +99,8 @@
 @include('core::partials.delete-modal')
 @stop
 
-@section('scripts')
-<script src="{!! Module::asset('media:js/dropzone.js') !!}"></script>
-<?php $config = config('asgard.media.config'); ?>
-<script>
-    var maxFilesize = '<?php echo $config['max-file-size'] ?>',
-            acceptedFiles = '<?php echo $config['allowed-types'] ?>';
-</script>
-<script src="{!! Module::asset('media:js/init-dropzone.js') !!}"></script>
+@push('js-stack')
+
 
 <?php $locale = App::getLocale(); ?>
 <script type="text/javascript">
@@ -117,4 +119,4 @@
         });
     });
 </script>
-@stop
+@endpush

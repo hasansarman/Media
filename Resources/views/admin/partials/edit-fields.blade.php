@@ -1,18 +1,18 @@
-<?php $altAttribute = isset($file->translate($lang)->alt_attribute) ? $file->translate($lang)->alt_attribute : '' ?>
-<div class='form-group{{ $errors->has("{$lang}[alt_attribute]") ? ' has-error' : '' }}'>
-    {!! Form::label("{$lang}[alt_attribute]", trans('media::media.form.alt_attribute')) !!}
-    {!! Form::text("{$lang}[alt_attribute]", Input::old("{$lang}[alt_attribute]", $altAttribute), ['class' => 'form-control', 'placeholder' => trans('media::media.form.alt_attribute')]) !!}
-    {!! $errors->first("{$lang}[alt_attribute]", '<span class="help-block">:message</span>') !!}
+<?php $altAttribute = isset($file->translate($lang)->ALT_ATTRIBUTE) ? $file->translate($lang)->alt_attribute : '' ?>
+<div class='form-group{{ $errors->has("{$lang}[ALT_ATTRIBUTE]") ? ' has-error' : '' }}'>
+    {!! Form::label("{$lang}[ALT_ATTRIBUTE]", trans('media::media.form.alt_attribute')) !!}
+    {!! Form::text("{$lang}[ALT_ATTRIBUTE]", old("{$lang}[ALT_ATTRIBUTE]", $altAttribute), ['class' => 'form-control', 'placeholder' => trans('media::media.form.alt_attribute')]) !!}
+    {!! $errors->first("{$lang}[ALT_ATTRIBUTE]", '<span class="help-block">:message</span>') !!}
 </div>
-<?php $description = isset($file->translate($lang)->description) ? $file->translate($lang)->description : '' ?>
-<div class='form-group{{ $errors->has("{$lang}[description]") ? ' has-error' : '' }}'>
-    {!! Form::label("{$lang}[description]", trans('media::media.form.description')) !!}
-    {!! Form::textarea("{$lang}[description]", Input::old("{$lang}[description]", $description), ['class' => 'form-control', 'placeholder' => trans('media::media.form.description')]) !!}
-    {!! $errors->first("{$lang}[description]", '<span class="help-block">:message</span>') !!}
+<?php $description = isset($file->translate($lang)->DESCRIPTION) ? $file->translate($lang)->DESCRIPTION : '' ?>
+<div class='form-group{{ $errors->has("{$lang}[DESCRIPTION]") ? ' has-error' : '' }}'>
+    {!! Form::label("{$lang}[DESCRIPTION]", trans('media::media.form.description')) !!}
+    {!! Form::textarea("{$lang}[DESCRIPTION]", old("{$lang}[DESCRIPTION]", $description), ['class' => 'form-control', 'placeholder' => trans('media::media.form.description')]) !!}
+    {!! $errors->first("{$lang}[DESCRIPTION]", '<span class="help-block">:message</span>') !!}
 </div>
-<?php $keywords = isset($file->translate($lang)->keywords) ? $file->translate($lang)->keywords : '' ?>
-<div class='form-group{{ $errors->has("{$lang}[keywords]") ? ' has-error' : '' }}'>
-    {!! Form::label("{$lang}[keywords]", trans('media::media.form.keywords')) !!}
-    {!! Form::text("{$lang}[keywords]", Input::old("{$lang}[keywords]", $keywords), ['class' => 'form-control', 'placeholder' => trans('media::media.form.keywords')]) !!}
-    {!! $errors->first("{$lang}[keywords]", '<span class="help-block">:message</span>') !!}
+<?php $keywords = isset($file->translate($lang)->KEYWORDS) ? $file->translate($lang)->KEYWORDS : '' ?>
+<div class='form-group{{ $errors->has("{$lang}[KEYWORDS]") ? ' has-error' : '' }}'>
+    {!! Form::label("{$lang}[KEYWORDS]", trans('media::media.form.keywords')) !!}
+    {!! Form::text("{$lang}[KEYWORDS]", old("{$lang}[KEYWORDS]", $keywords), ['class' => 'form-control', 'placeholder' => trans('media::media.form.keywords')]) !!}
+    {!! $errors->first("{$lang}[KEYWORDS]", '<span class="help-block">:message</span>') !!}
 </div>

@@ -1,10 +1,14 @@
-<?php namespace Modules\Media\Entities;
+<?php
+
+namespace Modules\Media\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
 class FileTranslation extends Model
 {
+  protected $primaryKey="ID";
+ 
     public $timestamps = false;
-    protected $fillable = ['description', 'alt_attribute', 'keywords'];
-    protected $table = 'media__file_translations';
+    protected $fillable = ['DESCRIPTION', 'ALT_ATTRIBUTE', 'KEYWORDS'];
+    protected $table = 'media_file_translations';
 }

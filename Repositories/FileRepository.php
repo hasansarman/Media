@@ -1,4 +1,6 @@
-<?php namespace Modules\Media\Repositories;
+<?php
+
+namespace Modules\Media\Repositories;
 
 use Modules\Core\Repositories\BaseRepository;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -22,7 +24,7 @@ interface FileRepository extends BaseRepository
 
     /**
      * Find multiple files for the given zone and entity
-     * @param zone $zone
+     * @param string $zone
      * @param object $entity
      * @return object
      */

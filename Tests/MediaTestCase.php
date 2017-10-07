@@ -1,4 +1,6 @@
-<?php namespace Modules\Media\Tests;
+<?php
+
+namespace Modules\Media\Tests;
 
 use Collective\Html\FormFacade;
 use Collective\Html\HtmlFacade;
@@ -11,9 +13,10 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider;
 use Modules\Core\Providers\CoreServiceProvider;
 use Modules\Media\Providers\MediaServiceProvider;
+use Modules\Tag\Providers\TagServiceProvider;
+use Nwidart\Modules\LaravelModulesServiceProvider;
+use Nwidart\Modules\Providers\BootstrapServiceProvider;
 use Orchestra\Testbench\TestCase;
-use Pingpong\Modules\ModulesServiceProvider;
-use Pingpong\Modules\Providers\BootstrapServiceProvider;
 
 abstract class MediaTestCase extends TestCase
 {
@@ -21,9 +24,11 @@ abstract class MediaTestCase extends TestCase
     {
         return [
             TranslationServiceProvider::class,
-            ModulesServiceProvider::class,
+            LaravelModulesServiceProvider::class,
             BootstrapServiceProvider::class,
             CoreServiceProvider::class,
+            TagServiceProvider::class,
+            \Modules\Media\Image\ImageServiceProvider::class,
             MediaServiceProvider::class,
             ImageServiceProvider::class,
             LaravelLocalizationServiceProvider::class,
@@ -44,23 +49,21 @@ abstract class MediaTestCase extends TestCase
 
     protected function getEnvironmentSetUp($app)
     {
-        $conf = [
-            'smallThumb' => [
-                'fit' => [
-                    'width' => 50,
-                    'height' => 50,
-                    'callback' => function ($constraint) {
-                        $constraint->upsize();
-                    },
-                ],
-            ],
-        ];
         $app['path.base'] = __DIR__ . '/..';
         $app['config']->set('asgard.media.config', ['filesystem' => 'local']);
-        $app['config']->set('asgard.media.thumbnails', $conf);
         $app['config']->set('modules', [
             'namespace' => 'Modules',
         ]);
         $app['config']->set('modules.paths.modules', realpath(__DIR__ . '/../Modules'));
+        $app['config']->set('database.default', 'sqlite');
+        $app['config']->set('database.connections.sqlite', array(
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ));
+        $app['config']->set('translatable.locales', ['en', 'fr']);
+        $app['config']->set('app.url', 'http://localhost');
+        $app['config']->set('filesystems.disks.local.url', 'http://localhost');
+        $app['config']->set('filesystems.disks.local.visibility', 'public');
     }
 }

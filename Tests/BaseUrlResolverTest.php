@@ -1,4 +1,6 @@
-<?php namespace Modules\Media\Tests;
+<?php
+
+namespace Modules\Media\Tests;
 
 use Modules\Media\UrlResolvers\BaseUrlResolver;
 
@@ -15,7 +17,6 @@ class BaseUrlResolverTest extends MediaTestCase
         $this->assertEquals(config('app.url') . '/assets/media/my_image.png', $resolvedPath);
     }
 
-    /** @test */
     public function it_returns_correct_aws_s3_uri()
     {
         config()->set('asgard.media.config.filesystem', 's3');
@@ -25,6 +26,6 @@ class BaseUrlResolverTest extends MediaTestCase
         $resolver = new BaseUrlResolver();
         $resolvedPath = $resolver->resolve('/assets/media/my_image.png');
 
-        $this->assertEquals('https://s3-eu-west-1.amazonaws.com/testing-bucket/assets/media/my_image.png', $resolvedPath);
+        $this->assertEquals('https://testing-bucket.s3-eu-west-1.amazonaws.com/assets/media/my_image.png', $resolvedPath);
     }
 }

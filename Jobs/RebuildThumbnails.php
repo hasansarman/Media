@@ -1,13 +1,13 @@
-<?php namespace Modules\Media\Jobs;
+<?php
 
-use App\Jobs\Job;
-use Illuminate\Contracts\Bus\SelfHandling;
+namespace Modules\Media\Jobs;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 
-class RebuildThumbnails extends Job implements SelfHandling, ShouldQueue
+class RebuildThumbnails implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -26,8 +26,12 @@ class RebuildThumbnails extends Job implements SelfHandling, ShouldQueue
         $imagy = app('imagy');
 
         foreach ($this->paths as $path) {
-            app('log')->info('Generating thumbnails for path: ' . $path);
-            $imagy->createAll($path);
+            try {
+                $imagy->createAll($path);
+                app('log')->info('Generating thumbnails for path: ' . $path);
+            } catch (\Exception $e) {
+                app('log')->warning('File not found: ' . $path);
+            }
         }
     }
 }

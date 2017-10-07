@@ -1,4 +1,8 @@
-<?php namespace Modules\Media\Support\Traits;
+<?php
+
+namespace Modules\Media\Support\Traits;
+
+use Modules\Media\Entities\File;
 
 trait MediaRelation
 {
@@ -8,6 +12,20 @@ trait MediaRelation
      */
     public function files()
     {
-        return $this->morphToMany('Modules\Media\Entities\File', 'imageable', 'media__imageables')->withPivot('zone', 'id')->withTimestamps()->orderBy('order');
+        return $this->morphToMany(File::class, 'imageable', 'media__imageables')->withPivot('zone', 'id')->withTimestamps()->orderBy('order');
+    }
+
+    /**
+     * Make the Many to Many Morph to Relation with specific zone
+     * @param string $zone
+     * @return object
+     */
+    public function filesByZone($zone)
+    {
+        return $this->morphToMany(File::class, 'imageable', 'media__imageables')
+            ->withPivot('zone', 'id')
+            ->wherePivot('zone', '=', $zone)
+            ->withTimestamps()
+            ->orderBy('order');
     }
 }

@@ -1,8 +1,14 @@
-<?php namespace Modules\Media\Repositories\Eloquent;
+<?php
+
+namespace Modules\Media\Repositories\Eloquent;
 
 use Illuminate\Database\Eloquent\Collection;
 use Modules\Core\Repositories\Eloquent\EloquentBaseRepository;
 use Modules\Media\Entities\File;
+use Modules\Media\Events\FileIsCreating;
+use Modules\Media\Events\FileIsUpdating;
+use Modules\Media\Events\FileWasCreated;
+use Modules\Media\Events\FileWasUpdated;
 use Modules\Media\Helpers\FileHelper;
 use Modules\Media\Repositories\FileRepository;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -17,7 +23,12 @@ class EloquentFileRepository extends EloquentBaseRepository implements FileRepos
      */
     public function update($file, $data)
     {
-        $file->update($data);
+        event($event = new FileIsUpdating($file, $data));
+        $file->update($event->getAttributes());
+
+        $file->setTags(array_get($data, 'tags', []));
+
+        event(new FileWasUpdated($file));
 
         return $file;
     }
@@ -37,14 +48,21 @@ class EloquentFileRepository extends EloquentBaseRepository implements FileRepos
             $fileName = $this->getNewUniqueFilename($fileName);
         }
 
-        return $this->model->create([
-            'filename' => $fileName,
-            'path' => config('asgard.media.config.files-path') . "{$fileName}",
-            'extension' => substr(strrchr($fileName, "."), 1),
-            'mimetype' => $file->getClientMimeType(),
-            'filesize' => $file->getFileInfo()->getSize(),
-            'folder_id' => 0,
-        ]);
+        $data = [
+            'FILENAME' => $fileName,
+            'PATH' => config('asgard.media.config.files-path') . "{$fileName}",
+            'EXTENSION' => substr(strrchr($fileName, '.'), 1),
+            'MIMETYPE' => $file->getClientMimeType(),
+            'FILESIZE' => $file->getFileInfo()->getSize(),
+            'FOLDER_ID' => 0,
+        ];
+
+        event($event = new FileIsCreating($data));
+
+        $file = $this->model->create($event->getAttributes());
+        event(new FileWasCreated($file));
+
+        return $file;
     }
 
     public function destroy($file)
@@ -94,9 +112,9 @@ class EloquentFileRepository extends EloquentBaseRepository implements FileRepos
     private function getNewUniqueFilename($fileName)
     {
         $fileNameOnly = pathinfo($fileName, PATHINFO_FILENAME);
-        $model = $this->model->where('filename', 'LIKE', "$fileNameOnly%")->orderBy('created_at', 'desc')->first();
-        $latestFilename = pathinfo($model->filename, PATHINFO_FILENAME);
-        $extension = pathinfo($model->filename, PATHINFO_EXTENSION);
+        $model = $this->model->where('FILENAME', 'LIKE', "$fileNameOnly%")->orderBy('IDATE', 'desc')->first();
+        $latestFilename = pathinfo($model->FILENAME, PATHINFO_FILENAME);
+        $extension = pathinfo($model->FILENAME, PATHINFO_EXTENSION);
 
         $version = substr($latestFilename, -1, strpos($latestFilename, '_'));
         $version++;

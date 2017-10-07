@@ -1,11 +1,13 @@
-<?php namespace Modules\Media\Http\Controllers\Admin;
+<?php
+
+namespace Modules\Media\Http\Controllers\Admin;
 
 use Illuminate\Contracts\Config\Repository;
 use Modules\Core\Http\Controllers\Admin\AdminBaseController;
 use Modules\Media\Entities\File;
 use Modules\Media\Http\Requests\UpdateMediaRequest;
 use Modules\Media\Image\Imagy;
-use Modules\Media\Image\ThumbnailsManager;
+use Modules\Media\Image\ThumbnailManager;
 use Modules\Media\Repositories\FileRepository;
 
 class MediaController extends AdminBaseController
@@ -23,11 +25,11 @@ class MediaController extends AdminBaseController
      */
     private $imagy;
     /**
-     * @var ThumbnailsManager
+     * @var ThumbnailManager
      */
     private $thumbnailsManager;
 
-    public function __construct(FileRepository $file, Repository $config, Imagy $imagy, ThumbnailsManager $thumbnailsManager)
+    public function __construct(FileRepository $file, Repository $config, Imagy $imagy, ThumbnailManager $thumbnailsManager)
     {
         parent::__construct();
         $this->file = $file;
@@ -84,9 +86,8 @@ class MediaController extends AdminBaseController
     {
         $this->file->update($file, $request->all());
 
-        flash(trans('media::messages.file updated'));
-
-        return redirect()->route('admin.media.media.index');
+        return redirect()->route('admin.media.media.index')
+            ->withSuccess(trans('media::messages.file updated'));
     }
 
     /**
@@ -101,8 +102,7 @@ class MediaController extends AdminBaseController
         $this->imagy->deleteAllFor($file);
         $this->file->destroy($file);
 
-        flash(trans('media::messages.file deleted'));
-
-        return redirect()->route('admin.media.media.index');
+        return redirect()->route('admin.media.media.index')
+            ->withSuccess(trans('media::messages.file deleted'));
     }
 }

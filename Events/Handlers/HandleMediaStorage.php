@@ -1,10 +1,12 @@
-<?php namespace Modules\Media\Events\Handlers;
+<?php
+
+namespace Modules\Media\Events\Handlers;
 
 use Modules\Media\Contracts\StoringMedia;
 
 class HandleMediaStorage
 {
-    public function handle($event = null)
+    public function handle($event = null, $data = [])
     {
         if ($event instanceof StoringMedia) {
             $this->handleMultiMedia($event);
@@ -23,11 +25,15 @@ class HandleMediaStorage
         $postMedias = array_get($event->getSubmissionData(), 'medias_multi', []);
 
         foreach ($postMedias as $zone => $attributes) {
+            $syncList = [];
             $orders = $this->getOrdersFrom($attributes);
             foreach (array_get($attributes, 'files', []) as $fileId) {
-                $order = array_search($fileId, $orders);
-                $entity->files()->attach($fileId, ['imageable_type' => get_class($entity), 'zone' => $zone, 'order' => $order]);
+                $syncList[$fileId] = [];
+                $syncList[$fileId]['imageable_type'] = get_class($entity);
+                $syncList[$fileId]['zone'] = $zone;
+                $syncList[$fileId]['order'] = (int) array_search($fileId, $orders);
             }
+            $entity->filesByZone($zone)->sync($syncList);
         }
     }
 
@@ -41,7 +47,11 @@ class HandleMediaStorage
         $postMedia = array_get($event->getSubmissionData(), 'medias_single', []);
 
         foreach ($postMedia as $zone => $fileId) {
-            $entity->files()->attach($fileId, ['imageable_type' => get_class($entity), 'zone' => $zone, 'order' => null]);
+            if (!empty($fileId)) {
+                $entity->filesByZone($zone)->sync([$fileId => ['imageable_type' => get_class($entity), 'zone' => $zone, 'order' => null]]);
+            } else {
+                $entity->filesByZone($zone)->sync([]);
+            }
         }
     }
 

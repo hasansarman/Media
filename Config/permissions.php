@@ -1,15 +1,14 @@
 <?php
+
 return [
-    'media.media' => [
-        'index',
-        'create',
-        'store',
-        'edit',
-        'update',
-        'destroy',
-    ],
-    'media.media-grid' => [
-        'index',
-        'ckIndex',
-    ]
+  'media.medias' => [
+      'index' => 'media::media.list resource',
+      'create' => 'media::media.create resource',
+      'edit' => 'media::media.edit resource',
+      'destroy' => 'media::media.destroy resource',
+  ],
 ];
+/*
+
+
+*/

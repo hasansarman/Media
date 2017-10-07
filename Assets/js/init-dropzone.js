@@ -1,6 +1,7 @@
 $( document ).ready(function() {
+
     Dropzone.autoDiscover = false;
-    var myDropzone = new Dropzone(".dropzone", {
+    var myDropzone = new Dropzone("#dropzone", {
         url: Asgard.dropzonePostUrl,
         autoProcessQueue: true,
         maxFilesize: maxFilesize,
@@ -11,7 +12,8 @@ $( document ).ready(function() {
             location.reload();
         }, 1000);
     });
-    myDropzone.on("sending", function(file, fromData) {
+    myDropzone.on("sending", function(file, xhr, fromData) {
+        xhr.setRequestHeader("Authorization", AuthorizationHeaderValue);
         if ($('.alert-danger').length > 0) {
             $('.alert-danger').remove();
         }

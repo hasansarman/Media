@@ -1,6 +1,8 @@
-<?php namespace Modules\Media\ValueObjects;
+<?php
 
-use Modules\Media\UrlResolvers\BaseUrlResolver;
+namespace Modules\Media\ValueObjects;
+
+use Illuminate\Support\Facades\Storage;
 
 class MediaPath
 {
@@ -23,7 +25,9 @@ class MediaPath
      */
     public function getUrl()
     {
-        return (new BaseUrlResolver())->resolve($this->path);
+        $path = ltrim($this->path, '/');
+
+        return Storage::disk(config('asgard.media.config.filesystem'))->url($path);
     }
 
     /**

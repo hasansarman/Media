@@ -1,6 +1,7 @@
-<?php namespace Modules\Media\Image;
+<?php
 
-use GuzzleHttp\Mimetypes;
+namespace Modules\Media\Image;
+
 use GuzzleHttp\Psr7\Stream;
 use Illuminate\Contracts\Filesystem\Factory;
 use Intervention\Image\ImageManager;
@@ -18,7 +19,7 @@ class Imagy
      */
     private $imageFactory;
     /**
-     * @var ThumbnailsManager
+     * @var ThumbnailManager
      */
     private $manager;
 
@@ -34,9 +35,9 @@ class Imagy
 
     /**
      * @param ImageFactoryInterface $imageFactory
-     * @param ThumbnailsManager $manager
+     * @param ThumbnailManager $manager
      */
-    public function __construct(ImageFactoryInterface $imageFactory, ThumbnailsManager $manager)
+    public function __construct(ImageFactoryInterface $imageFactory, ThumbnailManager $manager)
     {
         $this->image = app(ImageManager::class);
         $this->filesystem = app(Factory::class);
@@ -74,14 +75,22 @@ class Imagy
 
     /**
      * Return the thumbnail path
-     * @param  string $originalImage
+     * @param  string|File $originalImage
      * @param  string $thumbnail
      * @return string
      */
     public function getThumbnail($originalImage, $thumbnail)
     {
+        if ($originalImage instanceof File) {
+            $originalImage = $originalImage->path;
+        }
+
         if (!$this->isImage($originalImage)) {
-            return $originalImage;
+            if ($originalImage instanceof MediaPath) {
+                return $originalImage->getUrl();
+            }
+
+            return (new MediaPath($originalImage))->getRelativeUrl();
         }
 
         $path = config('asgard.media.config.files-path') . $this->newFilename($originalImage, $thumbnail);
@@ -145,7 +154,7 @@ class Imagy
         $resource = $image->detach();
         $config = [
             'visibility' => 'public',
-            'mimetype' => Mimetypes::getInstance()->fromFilename($filename),
+            'mimetype' => \GuzzleHttp\Psr7\mimetype_from_filename($filename),
         ];
         if ($this->fileExists($filename)) {
             return $this->filesystem->disk($this->getConfiguredFilesystem())->updateStream($filename, $resource, $config);

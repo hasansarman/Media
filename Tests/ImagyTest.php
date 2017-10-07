@@ -1,9 +1,13 @@
-<?php namespace Modules\Media\Tests;
+<?php
 
+namespace Modules\Media\Tests;
+
+use Illuminate\Contracts\Config\Repository;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\App;
 use Modules\Media\Image\Imagy;
 use Modules\Media\Image\Intervention\InterventionFactory;
-use Modules\Media\Image\ThumbnailsManager;
+use Modules\Media\Image\ThumbnailManager;
 use Modules\Media\ValueObjects\MediaPath;
 
 class ImagyTest extends MediaTestCase
@@ -13,11 +17,11 @@ class ImagyTest extends MediaTestCase
      */
     protected $imagy;
     /**
-     * @var \Illuminate\Filesystem\Filesystem
+     * @var Filesystem
      */
     protected $finder;
     /**
-     * @var \Illuminate\Contracts\Config\Repository
+     * @var Repository
      */
     protected $config;
     /**
@@ -32,12 +36,11 @@ class ImagyTest extends MediaTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->config = App::make('Illuminate\Contracts\Config\Repository');
-        $module = App::make('modules');
-        $this->finder = App::make('Illuminate\Filesystem\Filesystem');
-        $this->imagy = new Imagy(new InterventionFactory(), new ThumbnailsManager($this->config, $module), $this->config);
+        $this->config = App::make(Repository::class);
+        $this->finder = App::make(Filesystem::class);
+        $this->imagy = new Imagy(new InterventionFactory(), app(ThumbnailManager::class), $this->config);
 
-        $this->testbenchPublicPath = __DIR__ . '/../vendor/orchestra/testbench/fixture/public/';
+        $this->testbenchPublicPath = __DIR__ . '/../../../vendor/orchestra/testbench-core/fixture/public/';
         $this->mediaPath = __DIR__ . '/Fixtures/';
         $this->finder->copy("{$this->mediaPath}google-map.png", "{$this->testbenchPublicPath}google-map.png");
     }
@@ -69,7 +72,7 @@ class ImagyTest extends MediaTestCase
     {
         $path = $this->imagy->getThumbnail("{$this->mediaPath}google-map.png", 'smallThumb');
 
-        $expected = config('app.url') . config('asgard.media.config.files-path') . 'google-map_smallThumb.png';
+        $expected = config('app.url') . DIRECTORY_SEPARATOR . config('asgard.media.config.files-path') . 'google-map_smallThumb.png';
 
         $this->assertEquals($expected, $path);
     }
